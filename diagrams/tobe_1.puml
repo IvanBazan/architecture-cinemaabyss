@@ -1,0 +1,48 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Диаграмма контейнеров видеосервиса с отдельными БД для сервисов
+
+Person(Пользователь, "Пользователь", "Смотрит фильмы, оплачивает подписки")
+
+
+	http.HandleFunc("/api/users", handleUsers)
+	http.HandleFunc("/api/movies", handleMovies)
+	http.HandleFunc("/api/payments", handlePayments)
+	http.HandleFunc("/api/subscriptions", handleSubscriptions)
+
+
+System_Boundary(Видеоплатформа, "Видеосервис") {
+    Container(gateway, "API Gateway", "Kong/Envoy", "Маршрутизация, аутентификация, TLS")
+    Container(auth, "Auth Service", "Go", "Аутентификация, JWT")
+    Container(content, "Content Service", "Go", "Управление фильмами, избранным")
+    Container(payment, "Payment Service", "Go", "Платежи и подписки")
+    Container(recommendation, "Recommendation Service", "Python", "ML-рекомендации")
+    Container(notifications, "Notification Service", "Go", "Уведомления")
+    
+    ContainerDb(auth_db, "Auth Database", "PostgreSQL", "Хранение пользователей и учетных данных")
+    ContainerDb(content_db, "Content Database", "PostgreSQL", "Метаданные фильмов, избранное")
+    ContainerDb(payment_db, "Payment Database", "PostgreSQL", "Транзакции и подписки")
+    ContainerDb(recommendation_db, "Recommendation DB", "PostgreSQL", "Данные для рекомендаций")
+    
+    ContainerQueue(kafka, "Kafka", "Асинхронные события")
+}
+
+' Связи между элементами
+Пользователь --> gateway: "HTTPS (REST/gRPC)"
+gateway --> auth: "Проверка токенов"
+gateway --> content: "Запросы к контенту"
+gateway --> payment: "Оплата подписок"
+gateway --> recommendation: "Запрос рекомендаций"
+
+auth --> auth_db: "Чтение/запись"
+content --> content_db: "Чтение/запись"
+payment --> payment_db: "Чтение/запись"
+recommendation --> recommendation_db: "Чтение/запись"
+
+payment --> kafka: "Событие об оплате"
+kafka --> notifications: "Уведомление пользователю"
+content --> kafka: "Событие просмотра"
+kafka --> recommendation: "Обновление рекомендаций"
+
+@enduml

@@ -12,22 +12,22 @@ RUN go mod download
 COPY . .
 
 # Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o movies-service .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o proxy-service .
 
 # Use a smaller image for the final application
 FROM alpine:latest  
 
-RUN apk --no-cache add ca-certificates
-
-RUN apk add --no-cache jq
-
 WORKDIR /root/
 
 # Copy the binary from builder
-COPY --from=builder /app/movies-service .
+COPY --from=builder /app/proxy-service .
+
+RUN apk --no-cache add ca-certificates
+RUN apk --no-cache add tzdata
+RUN apk add --no-cache jq
 
 # Expose the application port
-EXPOSE 8081
+EXPOSE 8000
 
 # Command to run the executable
-CMD ["./movies-service"]
+CMD ["./proxy-service"]
