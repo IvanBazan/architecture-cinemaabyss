@@ -1,10 +1,13 @@
 name: API Tests
 
 on:
+  workflow_run:
+    workflows: ["Docker Build and Push"]
+    types: [completed]
   push:
-    branches: [ main, master ]
+    branches: [ main, master, cinema ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, master, cinema ]
   workflow_dispatch:
     inputs:
       environment:
