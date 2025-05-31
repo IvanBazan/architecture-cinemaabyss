@@ -5,7 +5,10 @@
 1. Спроектируйте to be архитектуру КиноБездны, разделив всю систему на отдельные домены и организовав интеграционное взаимодействие и единую точку вызова сервисов.
 Результат представьте в виде контейнерной диаграммы в нотации С4.
 Добавьте ссылку на файл в этот шаблон
-[ссылка на файл](ссылка)
+
+```markdown
+[Диаграмма архитектуры to_be](diagrams/tobe_1.png)
+```
 
 # Задание 2
 
@@ -274,6 +277,16 @@ cat .docker/config.json | base64
 
 #### Шаг 3
 Добавьте сюда скриншота вывода при вызове https://cinemaabyss.example.com/api/movies и  скриншот вывода event-service после вызова тестов.
+
+```markdown
+![скриншот тестов](/screenshots/KubernetesTests.png)
+```
+```markdown
+![ответ метода api/movies](/screenshots/api_moviesResp.png)
+```
+```markdown
+![логи event-service](/screenshots/eventsServicelog.png)
+```
 
 
 # Задание 4
