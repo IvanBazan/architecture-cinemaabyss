@@ -7,7 +7,7 @@
 Добавьте ссылку на файл в этот шаблон
 
 ```markdown
-[Диаграмма архитектуры to_be](diagrams/tobe_1.png)
+![Диаграмма архитектуры to_be](/diagrams/tobe_1.png)
 ```
 
 # Задание 2
@@ -61,6 +61,16 @@
 
 Необходимые тесты для проверки этого API вызываются при запуске npm run test:local из папки tests/postman 
 Приложите скриншот тестов и скриншот состояния топиков Kafka из UI http://localhost:8090 
+
+```markdown
+![Тесты](/screenshots/ComposeTests.png)
+```
+```markdown
+![Диаграмма архитектуры to_be](/screenshots/kafkaTopics_test.png)
+```
+```markdown
+![Диаграмма архитектуры to_be](/screenshots/kafkaTopics_test2.png)
+```
 
 # Задание 3
 
