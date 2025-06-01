@@ -1,0 +1,59 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+top to bottom direction
+title Диаграмма контейнеров видеосервиса с отдельными БД для сервисов
+
+Person(Пользователь, "Пользователь", "Смотрит фильмы, оплачивает подписки")
+
+System_Boundary(Видеоплатформа, "Видеосервис") {
+    Container(gateway, "API Gateway", "Kong/Envoy", "Маршрутизация, аутентификация, TLS")
+    Container(orchestrator, "Orchestrator Service", "Go", "Управление SAGA")
+    
+    Container(auth, "Auth Service", "Go", "Аутентификация, JWT")
+    Container(content, "Content Service", "Go", "Управление фильмами, избранным")
+    Container(payment, "Payment Service", "Go", "Платежи и подписки")
+    Container(events, "Events  Service", "Go", "События")
+    Container(recommendation, "Recommendation Service", "Python", "ML-рекомендации")
+    Container(notifications, "Notification Service", "Go", "Уведомления")
+    
+    ContainerDb(auth_db, "Auth Database", "PostgreSQL", "Хранение пользователей и учетных данных")
+    ContainerDb(content_db, "Content Database", "PostgreSQL", "Метаданные фильмов, избранное")
+    ContainerDb(payment_db, "Payment Database", "PostgreSQL", "Транзакции и подписки")
+    ContainerDb(events_db, "Events Database", "PostgreSQL", "События в системе")
+    ContainerDb(recommendation_db, "Recommendation DB", "PostgreSQL", "Данные для рекомендаций")
+    
+    ContainerQueue(kafka, "Kafka", "Асинхронные события")
+}
+
+System_Ext(notificationSystems, "Системы рассылки. SMS, push и тд")
+
+
+' Связи между элементами
+Пользователь -> gateway: "HTTPS (REST)"
+gateway --> auth: "Проверка токенов"
+gateway --> content: "Просмотр контента"
+gateway --> payment: "Просмотр подписок"
+gateway --> recommendation: "Запрос рекомендаций"
+
+gateway --> orchestrator: "Запуск SAGA процесса"
+orchestrator --> payment: "Списание средств"
+orchestrator --> content: "Разблокировка контента"
+orchestrator --> kafka: "События шагов SAGA"
+
+auth --> auth_db: "Чтение/запись"
+content --> content_db: "Чтение/запись"
+payment --> payment_db: "Чтение/запись"
+events --> events_db: "Чтение/запись"
+recommendation --> recommendation_db: "Чтение/запись"
+
+payment --> events: "Событие об оплате"
+kafka --> notifications: "Уведомление пользователю"
+content --> events: "Событие просмотра"
+kafka --> recommendation: "Обновление рекомендаций"
+events --> kafka: "рассылка событий"
+
+notifications --> notificationSystems
+notificationSystems --> Пользователь: "Рассылка уведомлений"
+
+@enduml
