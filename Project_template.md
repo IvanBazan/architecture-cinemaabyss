@@ -363,6 +363,11 @@ minikube tunnel
 https://cinemaabyss.example.com/api/movies и приложите скриншот
 
 
+```markdown
+![ответ метода api/movies при разворачивании через Helm](/screenshots/api_moviesRespHelm.png)
+```
+
+
 ## Удаляем все
 
 ```bash
